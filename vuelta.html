@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busqueda de Vuelos - Volaris</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      background-color: rgb(246, 246, 246);
+    }
+
+    header {
+      background-color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo img {
+      height: 40px;
+    }
+
+    .language-selector {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .language-selector a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      gap: 8px;
+    }
+
+    .language-selector img {
+      width: 20px;
+    }
+
+    /* Responsive para móviles - solo afecta al header */
+    @media (max-width: 600px) {
+      .header-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .logo img {
+        height: 36px;
+      }
+
+      .language-selector a {
+        justify-content: center;
+        font-size: 15px;
+      }
+    }
+
+    /* Estilo del contenedor principal */
+    main {
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    section {
+      width: 55%;
+      min-width: 320px;
+    }
+
+   
+        .search-summary {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding:2% 5% 2% 5%;
+            margin-bottom: 2%;
+            border: 1px solid #f0f0f0;
+            max-width: 900px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .flight-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .flight-route {
+            font-size: 1.1rem;
+            color: #666;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        
+        .share-btn {
+            background: #a0047d;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .share-btn:hover {
+            background: #8b0369;
+            transform: scale(1.05);
+        }
+
+        .edit-btn, .calendar-btn {
+            background: transparent;
+            border: 2px solid #a0047d;
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #a0047d;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .edit-btn:hover, .calendar-btn:hover {
+            background: #a0047d;
+            color: white;
+        }
+
+        .search-info p {
+            margin: 0.8rem 0;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .search-info p:first-child {
+            margin-top: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .search-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .search-info strong {
+            color: #a0047d;
+            font-weight: 700;
+        }
+
+        #fromCitySummary, #toCitySummary, #departureDateSummary {
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .edit-btn span, .calendar-btn span {
+                display: none;
+            }
+            
+            .edit-btn, .calendar-btn {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                padding: 0;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+          .action-buttons {
+                display: none;
+            }
+        }
+
+    .search-summary strong {
+      color: #a0047d;
+    }
+
+    .flight-card-container {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+
+    /* Estilo del contenedor de la tarjeta de vuelo */
+    .flight-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+
+    .flight-card:hover {
+      background-color: #f8f9fa;
+    }
+
+    /* Columna izquierda: horarios y aerolínea */
+    .flight-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+    }
+
+    .flight-time {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #000;
+      text-align: center;
+    }
+
+    /* Columna de hora de llegada */
+    .arrival-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .arrival-time {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #000;
+      text-align: center;
+    }
+
+    .flight-details {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+   
+    /* Columna central: línea de tiempo */
+    .flight-duration {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      font-size: 0.85rem;
+      color: #333;
+      position: relative;
+    }
+
+    .timeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      margin: 0.25rem 0;
+    }
+
+    .timeline::before {
+      content: '';
+      height: 2px;
+      background-color: #ccc;
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background-color: black;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .dot.start {
+      margin-right: auto;
+    }
+
+    .dot.end {
+      margin-left: auto;
+    }
+
+    /* Columna derecha: precio y disponibilidad */
+    .flight-price {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      flex: 1;
+      position: relative;
+    }
+
+    .availability {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 0.25rem;
+      text-align: right;
+    }
+
+    .price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .currency {
+      font-size: 0.85rem;
+      margin-left: 4px;
+    }
+
+    .tax-note {
+      font-size: 0.75rem;
+      color: #666;
+      text-align: right;
+    }
+
+    .expand-arrow {
+      position: absolute;
+      bottom: -8px;
+      right: 50%;
+      transform: translateX(50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #666;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .expand-arrow.rotated {
+      transform: translateX(50%) rotate(180deg);
+    }
+
+    .details-link {
+      color: #a0047d;
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-top: 0.25rem;
+      text-align: center;
+    }
+
+    /* Contenedor de opciones expandible */
+    .fare-options {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      background-color: white;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .fare-options.expanded {
+      max-height: 600px;
+    }
+
+    .fare-cards-container {
+      display: flex;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem 1.75rem;
+    }
+
+    .fare-card {
+      flex: 1;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      background-color: #fafafa;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fare-card.popular {
+      border-color: #4caf50;
+      background-color: white;
+    }
+
+    .fare-card.popular::before {
+      content: 'Popular';
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background-color: #4caf50;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .fare-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+      color: #a0047d;
+    }
+
+    .fare-features {
+      list-style: none;
+      margin-bottom: auto;
+    }
+
+    .fare-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .fare-features .icon {
+      font-size: 1rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .fare-price-section {
+      text-align: center;
+      margin-top: 0.75rem;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 0.75rem;
+    }
+
+    .fare-price-label {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 0.25rem;
+    }
+
+    .fare-price {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 0.75rem;
+    }
+
+    .fare-currency {
+      font-size: 0.9rem;
+      margin-left: 4px;
+    }
+
+    .select-btn {
+      background-color: transparent;
+      border: 2px solid #a0047d;
+      color: #a0047d;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .select-btn:hover {
+      background-color: #a0047d;
+      color: white;
+    }
+
+    .see-details {
+      color: #a0047d;
+      font-size: 0.8rem;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .subject-note {
+      color: #999;
+      font-size: 0.7rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+      section {
+        width: 95%;
+      }
+
+      .flight-card-container {
+        margin: 0.75rem 0;
+      }
+
+      .flight-card {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+      }
+
+      .flight-info, .arrival-info, .flight-duration, .flight-price {
+        flex: 0 0 50%;
+        margin-bottom: 1rem;
+      }
+
+      .flight-time {
+        font-size: 1.1rem;
+      }
+
+      .arrival-time {
+        font-size: 1.1rem;
+      }
+
+      .flight-details {
+        font-size: 0.75rem;
+      }
+
+      .flight-duration {
+        font-size: 0.75rem;
+      }
+
+      .price {
+        font-size: 1.3rem;
+      }
+
+      .availability {
+        font-size: 0.7rem;
+      }
+
+      .fare-options.expanded {
+        max-height: 1000px;
+      }
+
+      .fare-cards-container {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+      }
+
+      .fare-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      section {
+        width: 98%;
+      }
+
+      .flight-card-container {
+        margin: 0.5rem 0;
+      }
+
+      .flight-card {
+        padding: 0.5rem 0.75rem;
+      }
+
+      .flight-duration::after {
+        display: none;
+      }
+
+      .flight-time {
+        font-size: 1rem;
+      }
+
+      .arrival-time {
+        font-size: 1rem;
+      }
+
+      .flight-details {
+        font-size: 0.7rem;
+      }
+
+      .flight-duration {
+        font-size: 0.7rem;
+      }
+
+      .price {
+        font-size: 1.2rem;
+      }
+    }
+
+
+.date-selector-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.dates-container {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.date-item {
+    flex: 1;
+    min-width: 0;
+    padding: 16px 12px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    background: white;
+}
+
+.date-item:hover {
+    background-color: #fafafa;
+}
+
+.date-item.selected {
+    background: #a0047d;
+    color: white;
+    border: 2px solid #a0047d;
+    box-shadow: #a0047d;
+}
+
+.day-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-transform: capitalize;
+}
+
+.date-number {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.date-item.selected .date-number {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.date-item.selected .price {
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .date-selector-container {
+        padding: 0 5px;
+    }
+    
+    .date-selector {
+        gap: 4px;
+        padding: 6px;
+        border-radius: 12px;
+    }
+    
+    .nav-btn {
+        padding: 8px;
+    }
+    
+    .dates-container {
+        gap: 8px;
+        padding: 2px 4px;
+    }
+    
+    .date-item {
+        min-width: 95px;
+        padding: 12px 8px;
+        border-radius: 8px;
+    }
+    
+    .day-name {
+        font-size: 12px;
+    }
+    
+    .date-number {
+        font-size: 11px;
+    }
+    
+    .price {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dates-container {
+        gap: 6px;
+    }
+    
+    .date-item {
+        min-width: 85px;
+        padding: 10px 6px;
+    }
+    
+    .day-name {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+    
+    .date-number {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .price {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 360px) {
+    .dates-container {
+        gap: 4px;
+    }
+    
+    .date-item {
+        min-width: 75px;
+        padding: 8px 4px;
+    }
+    
+    .day-name {
+        font-size: 10px;
+    }
+    
+    .price {
+        font-size: 10px;
+    }
+}
+
+</style>
+ 
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <img src="img/y4-large-default.svg" alt="Logo" />
+      </div>
+
+      <ul class="language-selector">
+        <li>
+          <a href="#">
+            <img src="img/mx.svg" alt="Bandera México" />
+            México - Español
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="booking-steps-container">
+    <div class="booking-steps">
+        <div class="step active">
+            <div class="step-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="7.5,4.21 12,6.81 16.5,4.21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="7.5,19.79 7.5,14.6 3,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="21,12 16.5,14.6 16.5,19.79" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="12,22.81 12,17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <span class="step-text">Vuelos</span>
+        </div>
+        
+        <div class="connector">
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <span class="step-text">Asientos</span>
+        </div>
+        
+        <div class="connector">
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="6" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="16" y1="12" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span class="step-text">Pasajeros & Pago</span>
+        </div>
+        
+        <div class="connector">
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <span class="step-text">Confirmación</span>
+        </div>
+    </div>
+</section>
+
+<style>
+.booking-steps-container {
+    width: 45%;
+    margin: 0 auto;
+}
+
+.booking-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    padding-top: 2%;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.step-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    color: #999;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-icon {
+    background: #a0047d;
+    color: white;
+    border-color: #a0047d;
+    box-shadow: #a0047d;
+}
+
+.step-text {
+    font-size: 10px;
+    color: #999;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.step.active .step-text {
+    color: #a0047d;
+    font-weight: 600;
+}
+
+.connector {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 8px;
+}
+
+.dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #d0d0d0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .booking-steps-container {
+        width: 90%;
+        padding: 0 10px;
+    }
+    
+    .booking-steps {
+        padding: 20px 0;
+        justify-content: space-between;
+    }
+    
+    .step {
+        flex: 1;
+        max-width: none;
+    }
+    
+    .step-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .step-text {
+        font-size: 11px;
+        white-space: normal;
+        line-height: 1.2;
+        max-width: 60px;
+    }
+    
+    .connector {
+        flex: 0.5;
+        margin: 0 4px;
+    }
+    
+    .dots span {
+        width: 3px;
+        height: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-steps-container {
+        width: 95%;
+    }
+    
+    .booking-steps {
+        padding: 15px 0;
+    }
+    
+    .step-icon {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .step-text {
+        font-size: 9px;
+        max-width: 50px;
+    }
+    
+    .dots span {
+        width: 2px;
+        height: 2px;
+        gap: 2px;
+    }
+}
+
+@media (max-width: 360px) {
+    .booking-steps-container {
+        width: 98%;
+    }
+    
+    .step-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .step-text {
+        font-size: 8px;
+        max-width: 45px;
+    }
+    
+    .connector {
+        margin: 0 2px;
+    }
+    
+    .dots {
+        gap: 2px;
+    }
+}
+</style>
+<script>
+let currentStartDate = new Date();
+currentStartDate.setHours(0, 0, 0, 0);
+
+const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+// Precios base simulados (en la práctica estos vendrían de una API)
+const basePrices = [35, 35, 35, 35, 35, 35, 35];
+
+function formatPrice(price) {
+    return `${price} MXN`;
+}
+
+function generatePrice(dayIndex) {
+    // Todos los días tienen el mismo precio base
+    return basePrices[dayIndex % basePrices.length];
+}
+
+function formatDate(date) {
+    const day = date.getDate();
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+}
+
+function generateDates() {
+    const container = document.getElementById('datesContainer');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(currentStartDate);
+        date.setDate(currentStartDate.getDate() + i);
+        
+        const dayName = dayNames[date.getDay()];
+        const formattedDate = formatDate(date);
+        const price = generatePrice(i);
+        
+        const dateItem = document.createElement('div');
+        dateItem.className = 'date-item';
+        dateItem.onclick = () => selectDate(dateItem, date);
+        
+        // Seleccionar viernes por defecto (día 4 de la semana)
+        if (date.getDay() === 5) { // Viernes
+            dateItem.classList.add('selected');
+        }
+        
+        dateItem.innerHTML = `
+            <div class="day-name">${dayName}</div>
+            <div class="date-number">${formattedDate}</div>
+            <div class="price">${formatPrice(price)}</div>
+        `;
+        
+        container.appendChild(dateItem);
+    }
+}
+
+function selectDate(selectedItem, date) {
+    // Remover selección anterior
+    document.querySelectorAll('.date-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Agregar selección al item clickeado
+    selectedItem.classList.add('selected');
+    
+    console.log('Fecha seleccionada:', date.toLocaleDateString('es-MX'));
+}
+
+function navigateDays(days) {
+    currentStartDate.setDate(currentStartDate.getDate() + days);
+    generateDates();
+}
+
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    generateDates();
+});
+</script>
+  <main>
+    <section>
+     <div class="search-summary" id="searchSummary">
+        <div class="header-section">
+            <div class="flight-info">
+           
+                
+                
+                <div class="search-info">
+                  Elige tu vuelo de Regreso de
+            <p><strong id="fromCitySummary">Ciudad de México</strong> a <strong id="toCitySummary"></strong></p>
+            <p style="font-size: small;">Fecha de salida: <strong id="departureDateSummary">7 de junio de 2025</strong></p>
+        </div>
+
+
+            </div>
+            
+            <div class="action-buttons">
+                <button class="share-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"/>
+                        <circle cx="6" cy="12" r="3"/>
+                        <circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                </button>
+                
+                <button class="edit-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    <span>Modifica tu vuelo</span>
+                </button>
+                
+                <button class="calendar-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                        <line x1="16" x2="16" y1="2" y2="6"/>
+                        <line x1="8" x2="8" y1="2" y2="6"/>
+                        <line x1="3" x2="21" y1="10" y2="10"/>
+                        <path d="M8 14h.01"/>
+                        <path d="M12 14h.01"/>
+                        <path d="M16 14h.01"/>
+                        <path d="M8 18h.01"/>
+                        <path d="M12 18h.01"/>
+                    </svg>
+                    <span>Calendario de precios</span>
+                </button>
+            </div>
+        </div>
+        
+        
+    </div>
+
+      <section class="date-selector-container">
+    <div class="date-selector">
+        <button class="nav-btn prev-btn" onclick="navigateDays(-7)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M7.5 9L4.5 6L7.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <div class="dates-container" id="datesContainer">
+            <!-- Las fechas se generarán dinámicamente aquí -->
+        </div>
+        
+        <button class="nav-btn next-btn" onclick="navigateDays(7)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M4.5 3L7.5 6L4.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+</section>
+
+      
+      <div id="flightResults">
+        <!-- Las tarjetas de vuelo se generarán aquí -->
+      </div>
+    </section> 
+  </main>
+
+  
+
+  <script>
+    // Datos de rutas nacionales en México con duraciones aproximadas (en minutos)
+    const routeDurations = {
+  // 30 minutos
+  "CUN-CZM": 30, "CZM-CUN": 30,
+  "CPE-CME": 30, "CME-CPE": 30,
+
+  // 45 minutos
+  "PVR-GDL": 45, "GDL-PVR": 45,
+  "GDL-CLQ": 45, "CLQ-GDL": 45,
+  "TIJ-MXL": 45, "MXL-TIJ": 45,
+  "OAX-TGZ": 45, "TGZ-OAX": 45,
+  "SLP-ZCL": 45, "ZCL-SLP": 45,
+
+  // 60 minutos
+  "MID-CUN": 60, "CUN-MID": 60,
+  "PQM-MEX": 60, "PQM-GDL": 60, "PQM-MTY": 60,
+  "ISJ-MEX": 60, "ISJ-GDL": 60, "ISJ-MTY": 60,
+  "LTO-MEX": 60, "LTO-GDL": 60, "LTO-MTY": 60,
+  "CLQ-MEX": 60, "PBC-MEX": 60, "PBC-GDL": 60,
+  "QRO-MEX": 60, "QRO-GDL": 60,
+  "SLP-MEX": 60, "SLP-GDL": 60,
+  "UPN-MEX": 60, "UPN-GDL": 60,
+
+  // 75 minutos
+  "MEX-GDL": 75, "GDL-MEX": 75,
+  "MEX-OAX": 75, "OAX-MEX": 75,
+  "PVR-TRC": 75, "TRC-PVR": 75,
+  "VSA-ACA": 75, "ACA-VSA": 75,
+
+  // 90 minutos
+  "MEX-MTY": 90, "MTY-MEX": 90,
+  "GDL-MTY": 90, "MTY-GDL": 90,
+  "MEX-PVR": 90, "PVR-MEX": 90,
+  "MEX-VER": 90, "VER-MEX": 90,
+  "MEX-VSA": 90, "VSA-MEX": 90,
+  "MEX-CUL": 90, "CUL-MEX": 90,
+  "MEX-DGO": 90, "DGO-MEX": 90,
+  "MEX-TRC": 90, "TRC-MEX": 90,
+  "MEX-REX": 90, "REX-MEX": 90,
+  "MEX-TAM": 90, "TAM-MEX": 90,
+  "MEX-TGZ": 90, "TGZ-MEX": 90,
+  "MEX-ACA": 90, "ACA-MEX": 90,
+  "MEX-MAM": 90, "MAM-MEX": 90,
+  "MEX-TAP": 90, "TAP-MEX": 90,
+  "MTY-NOG": 90, "NOG-MTY": 90,
+  "MTY-PBC": 90, "PBC-MTY": 90,
+  "MTY-QRO": 90, "QRO-MTY": 90,
+  "MTY-TAM": 90, "TAM-MTY": 90,
+  "MTY-TGZ": 90, "TGZ-MTY": 90,
+  "MTY-PQM": 90, "PQM-MTY": 90,
+  "MTY-UPN": 90, "UPN-MTY": 90,
+  "PVR-ACA": 90, "ACA-PVR": 90,
+  "GDL-PBC": 90, "PBC-GDL": 90,
+  "GDL-QRO": 90, "QRO-GDL": 90,
+  "GDL-SLP": 90, "SLP-GDL": 90,
+
+  // 105 minutos
+  "MTY-LAP": 105, "LAP-MTY": 105,
+  "MTY-LMM": 105, "LMM-MTY": 105,
+  "PVR-LAP": 105, "LAP-PVR": 105,
+  "MXL-LAP": 105, "LAP-MXL": 105,
+
+  // 120 minutos
+  "MEX-CZM": 120, "CZM-MEX": 120,
+  "MEX-MID": 120, "MID-MEX": 120,
+  "MEX-HMO": 120, "HMO-MEX": 120,
+  "MTY-HMO": 120, "HMO-MTY": 120,
+  "CUN-HMO": 120, "HMO-CUN": 120,
+  "MEX-TIJ": 120, "TIJ-MEX": 120,
+  "MXL-MEX": 120, "MEX-MXL": 120,
+  "GDL-HMO": 120, "HMO-GDL": 120,
+  "MTY-TIJ": 120, "TIJ-MTY": 120,
+
+  // 135 minutos
+  "MEX-CUN": 135, "CUN-MEX": 135,
+  "MEX-LAP": 135, "LAP-MEX": 135,
+  "MEX-MXL": 135, "MXL-MEX": 135,
+  "LAP-TIJ": 135, "TIJ-LAP": 135,
+
+  // 150 minutos
+  "GDL-CZM": 150, "CZM-GDL": 150,
+
+  // 165 minutos
+  "MTY-CUN": 165, "CUN-MTY": 165,
+
+  // 180 minutos
+  "GDL-CUN": 180, "CUN-GDL": 180,
+  "CUN-PVR": 180, "PVR-CUN": 180
+};
+
+
+    // Función para formatear horas en formato AM/PM
+    function formatTime(hours, minutes) {
+      let period = 'AM';
+      if (hours >= 12) {
+        period = 'PM';
+        if (hours > 12) hours -= 12;
+      }
+      if (hours === 0) hours = 12;
+      return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
+
+    // Función para calcular la duración del vuelo
+    function calculateFlightDuration(from, to) {
+      const routeKey = `${from.toUpperCase()}-${to.toUpperCase()}`;
+      return routeDurations[routeKey] || 120; // 120 minutos por defecto
+    }
+
+    // Función para generar tarjetas de vuelo
+    function generateFlightCards() {
+      // Obtener datos del localStorage
+      const savedData = localStorage.getItem('flightSearchData');
+      let formData;
+      
+      if (savedData) {
+        formData = JSON.parse(savedData);
+      } else {
+        // Datos de ejemplo si no hay nada en localStorage
+        formData = {
+          from: "MEX",
+          to: "CUN",
+          departure: "2025-06-07",
+          return: "",
+          passengers: "1",
+          tripType: "one-way",
+          promoCode: ""
+        };
+      }
+      
+      // Actualizar resumen de búsqueda
+      document.getElementById('fromCitySummary').textContent = getCityName(formData.from);
+      document.getElementById('toCitySummary').textContent = getCityName(formData.to);
+      document.getElementById('departureDateSummary').textContent = formatDate(formData.return);
+      
+      // Calcular duración del vuelo
+      const durationMinutes = calculateFlightDuration(formData.from, formData.to);
+      const hours = Math.floor(durationMinutes / 60);
+      const minutes = durationMinutes % 60;
+      const durationText = `${hours}h ${minutes}min`;
+      
+      // Generar 7 tarjetas de vuelo
+      const flightResults = document.getElementById('flightResults');
+      flightResults.innerHTML = '';
+      
+      for (let i = 0; i < 7; i++) {
+        // Generar hora de salida aleatoria entre las 5:00 y las 23:00
+        const startHour = Math.floor(Math.random() * 19) + 5;
+        const startMinute = Math.floor(Math.random() * 60);
+        const startTime = formatTime(startHour, startMinute);
+        
+        // Calcular hora de llegada
+        const startTotalMinutes = startHour * 60 + startMinute;
+        const endTotalMinutes = startTotalMinutes + durationMinutes;
+        const endHour = Math.floor(endTotalMinutes / 60) % 24;
+        const endMinute = endTotalMinutes % 60;
+        const endTime = formatTime(endHour, endMinute);
+        
+        // Generar número de vuelo aleatorio
+        const flightNumber = `Y4 ${Math.floor(Math.random() * 900) + 100}`;
+        
+        // Crear tarjeta de vuelo
+        const flightCard = document.createElement('div');
+        flightCard.className = 'flight-card-container';
+        flightCard.innerHTML = `
+          <div class="flight-card" onclick="toggleFareOptions(this)">
+            <!-- Columna izquierda -->
+            <div class="flight-info">
+              <div class="flight-time">${startTime}</div>
+              <div class="flight-details">${flightNumber} Operado por Volaris México</div>
+            </div>
+
+            <!-- Columna central con timeline que conecta las horas -->
+            <div class="flight-duration">
+              <div class="timeline">
+                <span class="dot start"></span>
+                <span class="dot end"></span>
+              </div>
+              <div>${durationText}</div>
+              <div>Sin escalas</div>
+              <div class="details-link">Detalles</div>
+            </div>
+
+            <!-- Columna de hora de llegada -->
+            <div class="arrival-info">
+              <div class="arrival-time">${endTime}</div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="flight-price">
+              <div class="availability">${Math.floor(Math.random() * 5) + 1} asientos disponibles</div>
+              <div class="price">$35 <span class="currency">MXN</span></div>
+              <div class="tax-note">+299 TUA</div>
+              <div class="expand-arrow"></div>
+            </div>
+          </div>
+
+            <!-- Opciones de tarifas expandible -->
+          <div class="fare-options">
+            <div class="fare-cards-container">
+              <!-- Tarifa Zero -->
+              <div class="fare-card">
+                <h3 class="fare-title">Zero</h3>
+                <ul class="fare-features">
+                  <li><span class="icon"><i class="fa-solid fa-suitcase" style="color: #000000;"></i></span> 1 objeto personal de mano</li>
+                  <li><span class="icon"><i class="fa-solid fa-credit-card" style="color: #000000;"></i></span> Puntos Spin Premia</li>
+                  <li><span class="icon"><i class="fa-solid fa-star" style="color: #000000;"></i></span> Beneficios v.club<br><span class="subject-note">20% menos en tus próximas reservas</span></li>
+                </ul>
+                <a href="#" class="see-details">Ver detalles</a>
+                <div class="fare-price-section">
+                  <div class="fare-price-label">Tarifa preferencial</div>
+                  <div class="fare-price">$35 <span class="fare-currency">MXN</span></div>
+                  <button class="select-btn" onclick="selectFare('zero', '$35 MXN', event)">Seleccionar</button>
+                </div>
+              </div>
+
+              <!-- Tarifa Básica -->
+              <div class="fare-card popular">
+                <h3 class="fare-title">Básica</h3>
+                <ul class="fare-features">
+                  <li><span class="icon"><i class="fa-solid fa-suitcase" style="color: #000000;"></i></span> 1 objeto personal de mano</li>
+                  <li><span class="icon"><i class="fa-solid fa-suitcase-rolling" style="color: #000000;"></i></span> 1 equipaje de mano</li>
+                  <li><span class="icon"><i class="fa-solid fa-credit-card" style="color: #000000;"></i></span> Puntos Spin Premia</li>
+                  <li><span class="icon"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i></span> Adelanta tu vuelo en el aeropuerto</li>
+                </ul>
+                <a href="#" class="see-details">Ver detalles</a>
+                <div class="fare-price-section">
+                  <div class="fare-price-label">Tarifa preferencial</div>
+                  <div class="fare-price">$35 <span class="fare-currency">MXN</span></div>
+                  <button class="select-btn" onclick="selectFare('basica', '$35 MXN', event)">Seleccionar</button>
+                </div>
+              </div>
+
+              <!-- Tarifa Plus -->
+              <div class="fare-card">
+                <h3 class="fare-title">Plus</h3>
+                <ul class="fare-features">
+                  <li><span class="icon"><i class="fa-solid fa-suitcase" style="color: #000000;"></i></span> 1 objeto personal de mano</li>
+                  <li><span class="icon"><i class="fa-solid fa-suitcase-rolling" style="color: #000000;"></i></span> 1 equipaje de mano</li>
+                  <li><span class="icon"><i class="fa-solid fa-suitcase-rolling" style="color: #000000;"></i></span> 1 maleta documentada de 25 kg</li>
+                  <li><span class="icon"><i class="fa-brands fa-telegram" style="color: #000000;"></i></span> Volaris TV <span class="subject-note">(Sujeto a disponibilidad)</span></li>
+                  <li><span class="icon"><i class="fa-solid fa-credit-card" style="color: #000000;"></i></span> Puntos Spin Premia</li>
+                  <li><span class="icon"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i></span> Adelanta tu vuelo en el aeropuerto</li>
+                  <li><span class="icon"><i class="fa-solid fa-money-bill-transfer" style="color: #000000;"></i></span> Reembolso total</li>
+                  <li><span class="icon"><i class="fa-solid fa-plane-departure" style="color: #000000;"></i></span> Cambios ilimitados de vuelo</li>
+                  <li><span class="icon"><i class="fa-solid fa-person-walking-luggage" style="color: #000000;"></i></span> Prioridad en abordaje</li>
+                </ul>
+                <a href="#" class="see-details">Ver detalles</a>
+                <div class="fare-price-section">
+                  <div class="fare-price-label">Tarifa preferencial</div>
+                  <div class="fare-price">$35 <span class="fare-currency">MXN</span></div>
+                  <button class="select-btn" onclick="selectFare('plus', '$35 MXN', event)">Seleccionar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        flightResults.appendChild(flightCard);
+      }
+    }
+
+    // Función auxiliar para obtener nombre de ciudad a partir de código
+    function getCityName(code) {
+      const cities = {
+        "MEX": "Ciudad de México",
+        "CUN": "Cancún",
+        "GDL": "Guadalajara",
+        "MTY": "Monterrey"
+      };
+      return cities[code] || code;
+    }
+
+    // Función para formatear fecha
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('es-MX', options);
+    }
+
+    // Función para expandir/contraer opciones de tarifa
+    function toggleFareOptions(element) {
+      const card = element;
+      const container = card.closest('.flight-card-container');
+      const fareOptions = container.querySelector('.fare-options');
+      const expandArrow = card.querySelector('.expand-arrow');
+      
+      fareOptions.classList.toggle('expanded');
+      expandArrow.classList.toggle('rotated');
+    }
+
+    // Función para seleccionar tarifa
+    function selectFare(fareType, price, event) {
+      event.stopPropagation();
+      const button = event.target;
+      const originalText = button.textContent;
+      button.textContent = 'Redirigiendo...';
+      button.style.backgroundColor = '#4caf50';
+      button.style.borderColor = '#4caf50';
+      button.style.color = 'white';
+      
+      setTimeout(() => {
+        window.location.href = 'cargadatos.html';
+      }, 1000);
+    }
+
+    // Inicializar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      generateFlightCards();
+    });
+  </script>
+</body>
+</html>
